@@ -23,17 +23,8 @@ def translate_text_gpt(text):
     """
     global api_call_count
     api_call_count += 1
-    if api_call_count > 13:
-        print("API呼び出し回数が13回を超えました。1分間待機します。")
-        time.sleep(15)
-        print("15秒経過")
-        time.sleep(15)
-        print("30秒経過")
-        time.sleep(15)
-        print("45秒経過")
-        time.sleep(15)
-        api_call_count = 1  # リセットして再度カウント開始
-        print("1分間経過したので再度API呼び出しを行います。")
+    print("連続呼び出しを防ぐために15秒待機します。")
+    time.sleep(15)
     print(f"API呼び出し回数: {api_call_count}回目")
     
     separator = "\n---\n"  # 区切り文字
