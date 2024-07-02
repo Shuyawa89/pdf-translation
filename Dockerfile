@@ -12,7 +12,14 @@ RUN apt-get update && apt-get install -y \
     git \
     cmake \
     ninja-build \
+    libgl1-mesa-glx \
+    poppler-utils \
+    wget \
+    libglib2.0-0 \
     && apt-get clean
+
+# Download and install the model file
+RUN wget -O /root/.torch/iopath_cache/s/57zjbwv6gh3srry/model_final.pth "https://www.dropbox.com/s/57zjbwv6gh3srry/model_final.pth?dl=1"
 
 # Install Python packages
 COPY requirements.txt .

@@ -32,9 +32,12 @@ if __name__ == "__main__":
     output = PdfWriter()
 
     # レイアウトモデルのロード
-    model = lp.Detectron2LayoutModel('lp://PubLayNet/mask_rcnn_X_101_32x8d_FPN_3x/config',
-                                    extra_config=["MODEL.ROI_HEADS.SCORE_THRESH_TEST", 0.5],
-                                    label_map={0: "Text", 1: "Title", 2: "List", 3:"Table", 4:"Figure"})
+    model = lp.Detectron2LayoutModel(
+        config_path='lp://PubLayNet/mask_rcnn_X_101_32x8d_FPN_3x/config',
+        model_path='/root/.torch/iopath_cache/s/57zjbwv6gh3srry/model_final.pth',
+        extra_config=["MODEL.ROI_HEADS.SCORE_THRESH_TEST", 0.5],
+        label_map={0: "Text", 1: "Title", 2: "List", 3: "Table", 4: "Figure"}
+    )
 
     pdf_pages, _ = lp.load_pdf(target_pdf_file_path, load_images=True, dpi=DPI)
 
@@ -46,20 +49,20 @@ if __name__ == "__main__":
         print(height, width)
         plt.imshow(pdf_image)
         pdf_layout = model.detect(pdf_image)
-        paragraph_blocks = lp.Layout([b for b in pdf_layout if b.type=='Text'])
+        paragraph_blocks = lp.Layout([b for b in pdf_layout if b.type == 'Text'])
 
         cover_packet = io.BytesIO()
         cover_canvas = canvas.Canvas(cover_packet, pagesize=(int(base_width), int(base_height)), bottomup=True)
 
         text_packet = io.BytesIO()
         text_canvas = canvas.Canvas(text_packet, pagesize=(int(base_width), int(base_height)), bottomup=True)
-        
+
         for paragraph_block in paragraph_blocks:
             inner_text_blocks = list(filter(lambda x: is_inside(paragraph_block, x), text_blocks))
             print(len(inner_text_blocks))
             if len(inner_text_blocks) == 0:
                 continue
-            
+
             text = " ".join(list(map(lambda x: x.text, inner_text_blocks)))
             print(text)
             translated_text = translate_text(text)
