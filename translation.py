@@ -1,6 +1,9 @@
 from transformers import pipeline
+import torch
 
-translator = pipeline('translation', model='staka/fugumt-en-ja')
+device = 0 if torch.cuda.is_available() else -1  # GPUが使用可能な場合は0、そうでない場合は-1
+
+translator = pipeline('translation', model='staka/fugumt-en-ja', device=device)
 
 def translate_text(text):
     """

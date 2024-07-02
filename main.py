@@ -7,6 +7,7 @@ from reportlab.lib.styles import ParagraphStyle
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from pypdf import PdfWriter, PdfReader
+import torch
 
 from pdf_processing import pdf_to_image, is_inside, fill_cover, calc_fontsize, get_max_font_size
 from translation import translate_text
@@ -31,11 +32,15 @@ if __name__ == "__main__":
 
     output = PdfWriter()
 
+    # GPUが使用可能か確認
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    print(f"Using device: {device}")
+
     # レイアウトモデルのロード
     model = lp.Detectron2LayoutModel(
         config_path='lp://PubLayNet/mask_rcnn_X_101_32x8d_FPN_3x/config',
         model_path='/root/.torch/iopath_cache/s/57zjbwv6gh3srry/model_final.pth',
-        extra_config=["MODEL.ROI_HEADS.SCORE_THRESH_TEST", 0.5],
+        extra_config=["MODEL.ROI_HEADS.SCORE_THRESH_TEST", 0.5, "MODEL.DEVICE", device],
         label_map={0: "Text", 1: "Title", 2: "List", 3: "Table", 4: "Figure"}
     )
 
