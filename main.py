@@ -39,7 +39,7 @@ if __name__ == "__main__":
     # レイアウトモデルのロード
     model = lp.Detectron2LayoutModel(
         config_path='lp://PubLayNet/mask_rcnn_X_101_32x8d_FPN_3x/config',
-        model_path='/app/model_final.pth',
+        model_path='/app/model_final.pth',  # モデルファイルのパスをカレントディレクトリに変更
         extra_config=["MODEL.ROI_HEADS.SCORE_THRESH_TEST", 0.5, "MODEL.DEVICE", device],
         label_map={0: "Text", 1: "Title", 2: "List", 3: "Table", 4: "Figure"}
     )
