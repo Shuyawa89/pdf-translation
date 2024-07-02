@@ -1,0 +1,9 @@
+pillow
+layoutparser
+torchvision
+detectron2
+reportlab
+pypdf
+transformers
+sentencepiece
+pdf2image
