@@ -8,9 +8,10 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from pypdf import PdfWriter, PdfReader
 import torch
+import matplotlib.pyplot as plt
 
 from pdf_processing import pdf_to_image, is_inside, fill_cover, calc_fontsize, get_max_font_size
-from translation import translate_text
+from translated_gpt import translate_text_gpt, split_translated_text
 import layoutparser as lp
 
 if __name__ == "__main__":
@@ -52,6 +53,7 @@ if __name__ == "__main__":
         pdf_image = pdf_to_image(target_pdf_file_path, page_index)
         height, width, channel = pdf_image.shape
         print(height, width)
+        plt.imshow(pdf_image)
         pdf_layout = model.detect(pdf_image)
         paragraph_blocks = lp.Layout([b for b in pdf_layout if b.type == 'Text'])
 
@@ -61,17 +63,30 @@ if __name__ == "__main__":
         text_packet = io.BytesIO()
         text_canvas = canvas.Canvas(text_packet, pagesize=(int(base_width), int(base_height)), bottomup=True)
 
+        # ページ内のすべての段落ブロックのテキストを一つの文字列にまとめる
+        page_text = ""
+        paragraph_texts = []
         for paragraph_block in paragraph_blocks:
             inner_text_blocks = list(filter(lambda x: is_inside(paragraph_block, x), text_blocks))
-            print(len(inner_text_blocks))
             if len(inner_text_blocks) == 0:
                 continue
 
             text = " ".join(list(map(lambda x: x.text, inner_text_blocks)))
-            print(f"text: {text}")
-            translated_text = translate_text(text)
-            print(f"translated_text: {translated_text}")
+            paragraph_texts.append(text)
 
+        page_text = "\n---\n".join(paragraph_texts)  # 区切り文字で結合
+        print("翻訳前の文章:\n", page_text)
+
+        translated_page_text = translate_text_gpt(page_text)
+        print("翻訳後の文章:\n", translated_page_text)
+
+        translated_texts = split_translated_text(translated_page_text)
+
+        for i, paragraph_block in enumerate(paragraph_blocks):
+            if i >= len(translated_texts):
+                break
+
+            translated_text = translated_texts[i]
             paragraph_x = (paragraph_block.block.x_1 / width) * base_width
             paragraph_y = (paragraph_block.block.y_2 / height) * base_height
             paragraph_width = ((paragraph_block.block.x_2 - paragraph_block.block.x_1) / width) * base_width
@@ -80,7 +95,7 @@ if __name__ == "__main__":
             fill_cover(cover_canvas, paragraph_x, height - paragraph_y, paragraph_width, paragraph_height)
 
             frame = Frame(paragraph_x, height - paragraph_y, paragraph_width, paragraph_height, showBoundary=0, leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)
-            fontsize = calc_fontsize(paragraph_width, paragraph_height, translated_text)
+            fontsize = calc_fontsize(paragraph_width, paragraph_height, translated_text) - 2  # フォントサイズをひと回り小さくする
             style = ParagraphStyle(name='Normal', fontName=font_name, fontSize=fontsize, leading=fontsize)
             paragraph = Paragraph(translated_text, style)
             story = [paragraph]

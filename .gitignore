@@ -193,3 +193,6 @@ pyrightconfig.json
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/python,visualstudiocode
+
+# env.json apiキーなどの置き場
+env.json
