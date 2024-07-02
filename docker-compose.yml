@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - .:/app
+      - .:/app  # カレントディレクトリをコンテナ内の/appにマウント
     deploy:
       resources:
         reservations:

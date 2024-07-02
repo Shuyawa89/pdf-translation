@@ -18,9 +18,6 @@ RUN apt-get update && apt-get install -y \
     libglib2.0-0 \
     && apt-get clean
 
-# Download and install the model file
-RUN wget -O /root/.torch/iopath_cache/s/57zjbwv6gh3srry/model_final.pth "https://www.dropbox.com/s/57zjbwv6gh3srry/model_final.pth?dl=1"
-
 # Install Python packages
 COPY requirements.txt .
 RUN pip3 install --upgrade pip setuptools

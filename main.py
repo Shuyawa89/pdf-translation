@@ -39,7 +39,7 @@ if __name__ == "__main__":
     # レイアウトモデルのロード
     model = lp.Detectron2LayoutModel(
         config_path='lp://PubLayNet/mask_rcnn_X_101_32x8d_FPN_3x/config',
-        model_path='/root/.torch/iopath_cache/s/57zjbwv6gh3srry/model_final.pth',
+        model_path='/app/model_final.pth',
         extra_config=["MODEL.ROI_HEADS.SCORE_THRESH_TEST", 0.5, "MODEL.DEVICE", device],
         label_map={0: "Text", 1: "Title", 2: "List", 3: "Table", 4: "Figure"}
     )
@@ -52,7 +52,6 @@ if __name__ == "__main__":
         pdf_image = pdf_to_image(target_pdf_file_path, page_index)
         height, width, channel = pdf_image.shape
         print(height, width)
-        plt.imshow(pdf_image)
         pdf_layout = model.detect(pdf_image)
         paragraph_blocks = lp.Layout([b for b in pdf_layout if b.type == 'Text'])
 
@@ -69,9 +68,9 @@ if __name__ == "__main__":
                 continue
 
             text = " ".join(list(map(lambda x: x.text, inner_text_blocks)))
-            print(text)
+            print(f"text: {text}")
             translated_text = translate_text(text)
-            print(translated_text)
+            print(f"translated_text: {translated_text}")
 
             paragraph_x = (paragraph_block.block.x_1 / width) * base_width
             paragraph_y = (paragraph_block.block.y_2 / height) * base_height
