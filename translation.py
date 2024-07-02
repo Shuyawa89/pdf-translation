@@ -4,7 +4,8 @@ import re
 
 device = 0 if torch.cuda.is_available() else -1  # GPUが使用可能な場合は0、そうでない場合は-1
 
-translator = pipeline('translation', model='staka/fugumt-en-ja', device=device)
+translator = pipeline("translation", model="Helsinki-NLP/opus-mt-en-jap", device=device)
+# translator = pipeline('translation', model='staka/fugumt-en-ja', device=device)
 
 def translate_text(text, num_splits=3):
     """
@@ -37,7 +38,7 @@ def translate_text(text, num_splits=3):
         return splits
 
     translated_text = ""
-    if len(text) > 1000:
+    if len(text) > 250:
         split_texts = split_text(text, num_splits)
         translated_parts = [translator(part)[0]['translation_text'] for part in split_texts]
         translated_text = ''.join(translated_parts)
