@@ -196,3 +196,9 @@ pyrightconfig.json
 
 # env.json apiキーなどの置き場
 env.json
+
+# pdfファイルは対象外
+*.pdf
+
+# 重みファイルは対象外
+*.pth
