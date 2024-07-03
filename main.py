@@ -11,7 +11,7 @@ import torch
 import matplotlib.pyplot as plt
 
 from pdf_processing import pdf_to_image, is_inside, fill_cover, calc_fontsize, get_max_font_size
-from translated_gpt import translate_text_gpt, split_translated_text
+from translated_gemini import translate_text_gemini, split_translated_text
 import layoutparser as lp
 
 if __name__ == "__main__":
@@ -23,7 +23,7 @@ if __name__ == "__main__":
     pdfmetrics.registerFont(TTFont(font_name, font_ttf))
 
     # ファイルパスの入力を受け付ける
-    target_pdf_file_path = r"./Improvement of CT Reconstruction Using Scattered X-Rays.pdf"
+    target_pdf_file_path = r"./Scatter_Correction_in_X-Ray_CT_by_Physics-Inspired_Deep_Learning.pdf"
 
     is_mihiraki = True
 
@@ -77,7 +77,7 @@ if __name__ == "__main__":
         page_text = "\n---\n".join(paragraph_texts)  # 区切り文字で結合
         print("翻訳前の文章:\n", page_text)
 
-        translated_page_text = translate_text_gpt(page_text)
+        translated_page_text = translate_text_gemini(page_text)
         print("翻訳後の文章:\n", translated_page_text)
 
         translated_texts = split_translated_text(translated_page_text)
@@ -95,7 +95,7 @@ if __name__ == "__main__":
             fill_cover(cover_canvas, paragraph_x, height - paragraph_y, paragraph_width, paragraph_height)
 
             frame = Frame(paragraph_x, height - paragraph_y, paragraph_width, paragraph_height, showBoundary=0, leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)
-            fontsize = calc_fontsize(paragraph_width, paragraph_height, translated_text) - 2  # フォントサイズをひと回り小さくする
+            fontsize = calc_fontsize(paragraph_width, paragraph_height, translated_text) - 1  # フォントサイズをひと回り小さくする
             style = ParagraphStyle(name='Normal', fontName=font_name, fontSize=fontsize, leading=fontsize)
             paragraph = Paragraph(translated_text, style)
             story = [paragraph]
